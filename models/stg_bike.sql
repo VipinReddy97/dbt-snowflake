@@ -1,41 +1,25 @@
-WITH daily_weather as (
-
-
-select
-
-date(time) as daily_weather,
-weather,
-temp,
-pressure,
-humidity,
-clouds
-
-from {{ source('demo', 'weather') }}
-
-
-
-),
-
-daily_weather_agg as (
+WITH BIKE AS (
 
 select
-daily_weather,
-weather,
-round(avg(temp),2) as avg_temp,
-round(avg(pressure),2) as avg_pressure,
-round(avg(humidity),2) as avg_humidity,
-round(avg(clouds),2) as avg_clouds
+RIDE_ID,
+REPLACE(STARTED_AT,'"','') AS STARTED_AT,
+REPLACE(ENDED_AT,'"','') AS ENDED_AT,
+START_STATION_NAME,
+START_STATIO_ID,
+END_STATION_NAME,
+END_STATION_ID,
+START_LAT,
+START_LNG,
+END_LAT,
+END_LNG,
+MEMBER_CSUAL
 
-from daily_weather
+from {{ source('demo', 'bike') }}
 
-group by daily_weather, weather
-
-qualify ROW_NUMBER() OVER (PARTITION BY daily_weather ORDER BY count(weather) desc) =1
-
+where RIDE_ID not in ('"bikeid"', '""bikeid""') 
+  and STARTED_AT not in ('"starttime"', 'starttime', '""starttime""')
 )
-
-
 
 select
 *
-from daily_weather_agg
+from BIKE

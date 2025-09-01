@@ -20,7 +20,7 @@ CASE WHEN MONTH(TO_TIMESTAMP(STARTED_AT)) in (12,1,2)
     END AS STATION_OF_YEAR
 
 from
-{{ source('demo', 'bike') }}
+{{ ref('stg_bike') }}
 where STARTED_AT != 'started_at' and STARTED_AT != '"started_at"'
 )
 select 
